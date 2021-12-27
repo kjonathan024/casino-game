@@ -18,12 +18,37 @@ class Horse:
     def __init__(self,speed,luck):
         self.speed = speed
         self.luck = luck
+        self.name = "Horse"
+
     def __repr__(self):
-        return f'Horse with speed {self.speed} and luck {self.luck}%'        
+        return f'Speed: {self.speed} Luck: {self.luck}%'
+
+    def lucky(self):
+        if self.luck != 0:
+            luck = None
+            luck = self.luck <= random.randint(1,100)
+            if luck:
+                spacer(1)
+                print(f'{self.name} is feeling lucky!')
+            return luck
+
 
 def spacer(int=3):
     for i in range(int):
         print()
+
+def horseAlgorithm(horse_list, choice, bet, mults):
+    luckies = []
+    for horse in horse_list:
+        if len(luckies) == 0 and horse.lucky():
+            luckies.append(horse)
+    if len(luckies) == 0:
+        return horse_list[choice] == horse_list[0]
+        #aka choice == 0 (wrote more wordy version for easier readability)
+    
+    else:
+       return horse_list[choice] == luckies[0] 
+        
 
 def bet(player):
     bet = 0
@@ -43,10 +68,12 @@ def bet(player):
 def win(player, bet, multiplier):
     print(f"You won {bet*multiplier} dollars!")
     setattr(player, 'cash', int(getattr(player,'cash'))+(bet*multiplier))
+    spacer(5)
 
 def lose(player, bet):
     print(f"You lost {bet} dollars.")
     setattr(player, 'cash', int(getattr(player,'cash'))-bet)
+    spacer(5)
 
 def blackjack():
     #will add logic soon
@@ -62,10 +89,35 @@ def horses():
     spacer(1)
     #store horse objects in a List?
     horse_catalog = []
+    names = ["Flash", "Spike", "Sleepster", "Lucy"]
+    multipliers = [2,3,6,10]
     for i in range(4):
-        horse_catalog.append(Horse(random.randint(1,40),random.randint(0,50)))
-    horse_catalog.sort(key = lambda Horse:  -Horse.speed) 
-    print(horse_catalog)
+        horse_catalog.append(Horse(random.randint(1,40),random.randint(0,40)))
+    horse_catalog.sort(key = lambda Horse:  -Horse.speed)
+    print("Here are our horse options today:")
+    for i in range(len(horse_catalog)):
+        horse_catalog[i].name = names[i]
+        print(f'{horse_catalog[i].name}: {horse_catalog[i]} + Bet Multiplier: {multipliers[i]}')
+    spacer(2)
+    bet_amount = bet(player)
+    choice = ""
+    while choice not in names:
+        choice = str(input("Which horse would you like to place a bet on? ")).title()
+        if choice not in names:
+            print("Invalid Horse, try again.")
+            spacer(1)
+    spacer(1)
+    print(f"You have chosen {choice}, good choice!")
+    print(f'Let\'s find out if {choice} is today\'s winner!')
+    choice_num = names.index(choice)
+    if horseAlgorithm(horse_catalog, choice_num, bet_amount, multipliers):
+        print(f"{choice} was the winner!")
+        spacer(1)
+        win(player, bet_amount, multipliers[choice_num])
+    else: 
+        print(f"{choice} was not the winner.")
+        spacer(1)
+        lose(player, bet_amount)
     
 
 def dice():
@@ -126,10 +178,13 @@ def gameSelect():
     if game.lower() in list:
         if game == list[0]:
             blackjack()
+            return True
         elif game == list[1]:
             horses()
+            return True
         elif game == list[2]:
             dice()
+            return True
         else:
             return False
     else:
@@ -147,6 +202,6 @@ gameState = True
 while getattr(player, 'cash') > 0 and gameState:
     gameState = gameSelect()
     
-
+spacer()
 print("Thanks for playing!")
 print(f'Here\'s your P/L: {player.cash - player.initial_cash}')

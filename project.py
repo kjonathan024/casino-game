@@ -18,7 +18,8 @@ class Horse:
     def __init__(self,speed,luck):
         self.speed = speed
         self.luck = luck
-    pass        
+    def __repr__(self):
+        return f'Horse with speed {self.speed} and luck {self.luck}%'        
 
 def spacer(int=3):
     for i in range(int):
@@ -55,8 +56,17 @@ def blackjack():
 
 def horses():
     #will add logic soon
-    print("this is horses")
-    pass
+    #gameplan: generate random horse objects and list their characteristics to the players. Have speed be the determinant and add luck factor to each horse
+    spacer(5)
+    print("Welcome to Horses!")
+    spacer(1)
+    #store horse objects in a List?
+    horse_catalog = []
+    for i in range(4):
+        horse_catalog.append(Horse(random.randint(1,40),random.randint(0,50)))
+    horse_catalog.sort(key = lambda Horse:  -Horse.speed) 
+    print(horse_catalog)
+    
 
 def dice():
     #will add logic soon

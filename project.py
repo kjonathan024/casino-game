@@ -1,6 +1,7 @@
 import random
 
 class Player:
+    #maybe add the leveling
     def __init__(self, name):
         self.name = name
         self.cash = 1000
@@ -13,9 +14,38 @@ class Player:
     def __repr__(self):
         return f'You have {self.cash} dollars.'
 
+class Horse:
+    def __init__(self,speed,luck):
+        self.speed = speed
+        self.luck = luck
+    pass        
+
 def spacer(int=3):
     for i in range(int):
         print()
+
+def bet(player):
+    bet = 0
+    while bet == 0 or bet > player.cash:
+        try:
+            bet = int(input("How much would you like to bet? "))
+            spacer(1)
+            if bet > player.cash:
+                print(f"Invalid Bet Amount: You have {player.cash} dollars to bet.")
+                spacer(1)
+        except ValueError:
+            print(f"Invalid Bet Amount: You have {player.cash} dollars to bet.")
+            spacer(1)
+            continue
+    return bet
+
+def win(player, bet, multiplier):
+    print(f"You won {bet*multiplier} dollars!")
+    setattr(player, 'cash', int(getattr(player,'cash'))+(bet*multiplier))
+
+def lose(player, bet):
+    print(f"You lost {bet} dollars.")
+    setattr(player, 'cash', int(getattr(player,'cash'))-bet)
 
 def blackjack():
     #will add logic soon
@@ -41,14 +71,9 @@ def dice():
         spacer(1)
         game_type = input("Would you like to do a fifty-fifty (type 'fifty) or a single-number game? (type 'single') ")
         spacer(1)
-    #choose bet amount
-    bet = 0
-    while bet == 0 or bet > player.cash:
-        bet = int(input("How much would you like to bet? "))
-        spacer(1)
-        if bet > player.cash:
-            print(f"Invalid Bet Amount: You have {player.cash} dollars to bet.")
-            spacer(1)    
+    #choose bet amount using bet() function
+    bet_amount = bet(player)  
+    #50/50
     if game_type == types[0]:
         side = None
         while side != 0 and side != 1:
@@ -57,30 +82,46 @@ def dice():
             if side !=0 and side !=1:
                 spacer(1)
                 print(f"{side} is not a valid response.")
-            elif side == 0:
-                result = random.randint(1,6)
-
+            else:
+                result = random.randint(0,1)
+                print(f"Here's the Roll! upper" if result ==1 else f"Here's the Roll! lower")
+                if side == result:
+                    win(player,bet_amount, 2)
+                else:
+                    lose(player,bet_amount)
+    #single number
     else:
-        pass
-
-def win(player, bet, multiplier):
-    setattr(player, 'cash', int(getattr(player,'cash'))+(bet*multiplier))
-
-def lose(player, bet):
-    setattr(player, 'cash', int(getattr(player,'cash'))-bet)
-    
+        spacer(1)
+        choice = None
+        while choice not in [1,2,3,4,5,6]:
+            choice = int(input("Which number would you like to bet on? Choose any number from 1 to 6: "))
+            if choice not in [1,2,3,4,5,6]:
+                spacer(1)
+                print(f"{choice} is not a valid response.")
+            else:
+                result = random.randint(1,6)
+                spacer(1)
+                print(f"Here's the Roll! {result}")
+                if choice == result:
+                    win(player,bet_amount, 5)
+                else:
+                    lose(player,bet_amount)
+        
 
 def gameSelect():
-    list = ['blackjack', 'horses', 'dice']
+    list = ['blackjack', 'horses', 'dice', 'exit']
     print("We have three games to choose from: blackjack, horses, and dice.")
+    print("## You may also type 'exit' if you wish to leave. ##")
     game = input("Which one would you like to play? ")
     if game.lower() in list:
         if game == list[0]:
             blackjack()
         elif game == list[1]:
             horses()
-        else:
+        elif game == list[2]:
             dice()
+        else:
+            return False
     else:
         print("This is not a valid response.")
         spacer(1)
@@ -92,9 +133,10 @@ spacer(2)
 name = input("What is your name? ")
 player = Player(name)
 player.greeting()
-while getattr(player, 'cash') > 0:
-    gameSelect()
-    break
+gameState = True
+while getattr(player, 'cash') > 0 and gameState:
+    gameState = gameSelect()
+    
 
 print("Thanks for playing!")
 print(f'Here\'s your P/L: {player.cash - player.initial_cash}')

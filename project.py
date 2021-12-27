@@ -77,13 +77,76 @@ def lose(player, bet):
 
 def blackjack():
     #will add logic soon
-    #make sure to check that the bet is not over the amount of money they have
-    print("this is blackjack")
+    spacer(5)
+    print("Welcome to Blackjack!")
+    spacer(1)
+    card_list = ['Ace',2,3,4,5,6,7,8,9,10,'Jack','Queen','King']
+    count_list = []
+    count = 0
+    bet_amount = bet(player)
+    print("Let's begin the game...")
+    spacer(1)
+    count = hitCard(count,count_list,2)
+    turnOver = False
+    while isNotOver(count) and not turnOver:
+        choice = ''
+        spacer(1)
+        print(count_list)
+        while choice not in ("hit","stand"):
+            choice = input(f"Your total is {count}: would you like to hit (type 'hit') or stand (type 'stand')? ")
+            if choice not in ("hit","stand"):
+                print("Invalid option.")
+                spacer(1)
+            if choice == "hit":
+                count = hitCard(count,count_list)
+            else:
+                spacer(1)
+                print("You've chosen to stand, good luck!")
+                spacer(1)
+                turnOver = True
+        
+
+    
+def DealerTurn():
     pass
+    
+def isNotOver(count):
+    if count > 21:
+        spacer(1)
+        print("Busted!")
+        spacer(1)
+        return False
+    else:
+        return True
+
+def hitCard(count, count_list, times=1):
+    card_list = ['Ace',2,3,4,5,6,7,8,9,10,'Jack','Queen','King']
+    for i in range(times):
+        hit = random.choice(card_list)
+        count_list.append(hit)
+        print(f'You got a {hit}')
+        if hit in {10, 'Jack','Queen','King'}:
+            if 'Ace' in count_list:
+                count -= 10
+            hit = 10
+            count += hit
+        elif hit == 'Ace':
+            if count +11 > 21:
+                
+                hit = 1
+                count += hit
+            else:
+                hit = 11
+                count += hit
+        else:
+            count += hit
+    if len(count_list) == 2 and count == 21:
+        spacer(1)
+        print("Blackjack!")
+        spacer(1)
+    return count
 
 def horses():
-    #will add logic soon
-    #gameplan: generate random horse objects and list their characteristics to the players. Have speed be the determinant and add luck factor to each horse
     spacer(5)
     print("Welcome to Horses!")
     spacer(1)
@@ -121,7 +184,6 @@ def horses():
     
 
 def dice():
-    #will add logic soon
     dice_options = [1,2,3,4,5,6]
     spacer(5)
     print("Welcome to Dice!")
@@ -173,7 +235,9 @@ def dice():
 def gameSelect():
     list = ['blackjack', 'horses', 'dice', 'exit']
     print("We have three games to choose from: blackjack, horses, and dice.")
+    spacer(1)
     print("## You may also type 'exit' if you wish to leave. ##")
+    spacer(2)
     game = input("Which one would you like to play? ")
     if game.lower() in list:
         if game == list[0]:

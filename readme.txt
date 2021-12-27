@@ -1,11 +1,11 @@
-This is where I will be writing my ideas:
-
-1: Casino Game - add different casino games and make OOP
-features, such as the player's cash amounts and perhaps even
-for certain games for there to be a leveling system.
+Python Casino Game by Jonathan Kahn
 
 Features:
-    - Player class with levels for each of the games, money
-    - Blackjack (maybe add for leveling the ability to "feel lucky" on a next card)
-    - Horse racing (generate horse objects with random speed stats)
-    - Dice
+    - Player class with money and name attributes
+    - Blackjack (standard blackjack)
+    - Horse racing (generate horse objects with random speed and luck stats)
+    - Dice (both single bet and 50/50 bets)
+
+Future Addition Ideas:
+    - GUI
+    - Possible leveling aspect for player

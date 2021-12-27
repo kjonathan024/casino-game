@@ -1,7 +1,6 @@
 import random
 
 class Player:
-    #maybe add the leveling
     def __init__(self, name):
         self.name = name
         self.cash = 1000
@@ -86,6 +85,9 @@ def blackjack():
     bet_amount = bet(player)
     print("Let's begin the game...")
     spacer(1)
+    dealer_count = 0
+    dealer_count_list = []
+    dealer_count += hitCard(dealer_count,dealer_count_list,1,None)
     count = hitCard(count,count_list,2)
     turnOver = False
     while isNotOver(count) and not turnOver:
@@ -93,7 +95,7 @@ def blackjack():
         spacer(1)
         print(count_list)
         while choice not in ("hit","stand"):
-            choice = input(f"Your total is {count}: would you like to hit (type 'hit') or stand (type 'stand')? ")
+            choice = input(f"The dealer is showing a {dealer_count_list}\nYour total is {count}: would you like to hit (type 'hit') or stand (type 'stand')? ")
             if choice not in ("hit","stand"):
                 print("Invalid option.")
                 spacer(1)
@@ -104,47 +106,63 @@ def blackjack():
                 print("You've chosen to stand, good luck!")
                 spacer(1)
                 turnOver = True
-        
+    if isNotOver(count):
+        dealer_count = hitCard(dealer_count,dealer_count_list,1,"Dealer")
+        while isNotOver(dealer_count) and dealer_count < 17:
+            dealer_count = hitCard(dealer_count,dealer_count_list,1,"Dealer")
 
-    
-def DealerTurn():
-    pass
+        print(f'Dealer Cards: {dealer_count_list}')
+        print(f'The dealer has {dealer_count}.')
+        if dealer_count > count and isNotOver(dealer_count):
+            lose(player, bet_amount)
+        elif dealer_count == count:
+            print("Push")
+        else:
+            win(player,bet_amount,2)
+
+    else:
+        print("Busted!")
+        lose(player,bet_amount)
     
 def isNotOver(count):
     if count > 21:
-        spacer(1)
-        print("Busted!")
         spacer(1)
         return False
     else:
         return True
 
-def hitCard(count, count_list, times=1):
+#I think I need to write a function to count up the cards from the list and just use that to change the Ace value while showing
+#No difference to the user
+
+def cardCount(count_list):
+    card_list = ['Ace',2,3,4,5,6,7,8,9,10,'Jack','Queen','King']
+    total = 0
+    ace_counter = 0
+    for item in count_list:
+        if item in {10, 'Jack', 'Queen', 'King'}:
+            total += 10
+        elif item == 'Ace':
+            ace_counter += 1
+        else:
+            total += item
+    while ace_counter > 0:
+        if total + ace_counter*11 > 21:
+            total +=1
+        else:
+            total += 11
+        ace_counter -=1
+    return total
+
+def hitCard(count, count_list, times=1, name = "You"):
+    #fix logic for if we have an existing ace that needs to become a one. 
+    #Currently, if we have an ace, we just subtract 10 if it would go over 21, but this is flawed logic.
     card_list = ['Ace',2,3,4,5,6,7,8,9,10,'Jack','Queen','King']
     for i in range(times):
         hit = random.choice(card_list)
         count_list.append(hit)
-        print(f'You got a {hit}')
-        if hit in {10, 'Jack','Queen','King'}:
-            if 'Ace' in count_list:
-                count -= 10
-            hit = 10
-            count += hit
-        elif hit == 'Ace':
-            if count +11 > 21:
-                
-                hit = 1
-                count += hit
-            else:
-                hit = 11
-                count += hit
-        else:
-            count += hit
-    if len(count_list) == 2 and count == 21:
-        spacer(1)
-        print("Blackjack!")
-        spacer(1)
-    return count
+        if name != None:
+            print(f'{name} got a {hit}')
+    return cardCount(count_list)
 
 def horses():
     spacer(5)
